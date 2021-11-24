@@ -13,17 +13,12 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * Created by 086 on 4/08/2017.
  */
-
-// Modify by Rina in 06/03/20.
-
-import me.zeroeightsix.kami.util.TurokGL;
-
 public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentUI<CheckButton> {
 
     protected Color backgroundColour = new Color(200, 56, 56);
     protected Color backgroundColourHover = new Color(255,66,66);
 
-    protected Color idleColourNormal = new Color(250, 250, 250);
+    protected Color idleColourNormal = new Color(200, 200, 200);
     protected Color downColourNormal = new Color(190, 190, 190);
 
     protected Color idleColourToggle = new Color(250, 120, 120);
@@ -31,27 +26,30 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
 
     @Override
     public void renderComponent(CheckButton component, FontRenderer ff) {
-        TurokGL.turok_RGBA(backgroundColour.getRed(), backgroundColour.getGreen(), backgroundColour.getBlue(), component.getOpacity());
+
+        glColor4f(backgroundColour.getRed()/255f, backgroundColour.getGreen()/255f, backgroundColour.getBlue()/255f, component.getOpacity());
         if (component.isToggled()){
-            TurokGL.turok_RGB(250, backgroundColour.getGreen(), backgroundColour.getBlue());
+            glColor3f(.9f, backgroundColour.getGreen()/255f, backgroundColour.getBlue()/255f);
         }
-        
         if (component.isHovered() || component.isPressed()){
-            TurokGL.turok_RGBA(backgroundColourHover.getRed(), backgroundColourHover.getGreen(), backgroundColourHover.getBlue(), component.getOpacity());
+            glColor4f(backgroundColourHover.getRed()/255f, backgroundColourHover.getGreen()/255f, backgroundColourHover.getBlue()/255f, component.getOpacity());
         }
 
         String text = component.getName();
-        int c = component.isPressed() ? 0x3300ff : component.isToggled() ? 0x34eb92 : 0xffffff;
+        int c = component.isPressed() ? 0xaaaaaa : component.isToggled() ? 0xff3333 : 0xdddddd;
+        if (component.isHovered())
+            c = (c & 0x7f7f7f) << 1;
 
-        TurokGL.turok_RGB(255, 255, 255);
-        KamiGUI.fontRenderer.drawString(1, KamiGUI.cFontRenderer.getFontHeight()/2-2, c, text);
-        
-        TurokGL.turok_FixGL("Fixing...");
+        glColor3f(1,1,1);
+        glEnable(GL_TEXTURE_2D);
+        KamiGUI.fontRenderer.drawString(component.getWidth() / 2 - KamiGUI.fontRenderer.getStringWidth(text) / 2, KamiGUI.fontRenderer.getFontHeight()/2-2, c, text);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
     }
 
     @Override
     public void handleAddComponent(CheckButton component, Container container) {
-        component.setWidth(KamiGUI.cFontRenderer.getStringWidth(component.getName()) + 28);
-        component.setHeight(KamiGUI.cFontRenderer.getFontHeight() + 2);
+        component.setWidth(KamiGUI.fontRenderer.getStringWidth(component.getName()) + 28);
+        component.setHeight(KamiGUI.fontRenderer.getFontHeight()+2);
     }
 }
